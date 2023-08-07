@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="com.jp.household.repository.HouseholdExpensesRepository">
+	<resultMap type="com.jp.household.entity.HouseholdExpenses"
+		id="expenses">
+		<id column="id" property="id"></id>
+		<result column="year" property="year" />
+		<result column="month" property="month" />
+		<result column="day" property="day" />
+		<result column="item" property="item" />
+		<result column="cost" property="cost" />
+	</resultMap>
+
+	<select id="findAll"
+		resultType="com.jp.household.entity.HouseholdExpenses">
+		SELECT * FROM household
+	</select>
+
+	<select id="total" resultType="int">
+		SELECT SUM(cost) as total
+		FROM
+		household
+		WHERE year = #{year} AND month = #{month}
+	</select>
+
+	<select id="findMonthlyExpenses"
+		resultType="com.jp.household.entity.MonthlyExpense">
+		SELECT year, month, SUM(cost) as total FROM household GROUP
+		BY year, month
+		ORDER BY year DESC, month DESC
+	</select>
+
+	<select id="findTotalMonthlyCost"
+		resultType="com.jp.household.entity.MonthlyExpensesList">
+		SELECT id,year, month, day, item, SUM(h.cost) as total
+		FROM
+		household WHERE month = #{month} AND year = #{year} GROUP BY id,
+		year,
+		month, day, item ORDER BY day DESC
+	</select>
+
+	<select id="findForValidate"
+		resultType="com.jp.household.entity.HouseholdExpenses">
+		SELECT * FROM household WHERE day= #{day} AND month=
+		#{month} AND year=
+		#{year} AND item= #{item}
+	</select>
+
+	<insert id="householdAdd"
+		parameterType="com.jp.household.entity.HouseholdExpenses">
+		INSERT INTO household(year,month,day,item,cost)
+		VALUES(#{year},#{month},#{day},#{item},#{cost})
+	</insert>
+
+	<select id="findById"
+		resultType="com.jp.household.entity.HouseholdExpenses">
+		SELECT * FROM
+		household where id = #{id}
+	</select>
+
+	<update id="update">
+		UPDATE household
+		SET year = #{year},
+		month = #{month},
+		day = #{day},
+		item = #{item},
+		cost = #{cost}
+		where id = #{id}
+	</update>
+</mapper>
